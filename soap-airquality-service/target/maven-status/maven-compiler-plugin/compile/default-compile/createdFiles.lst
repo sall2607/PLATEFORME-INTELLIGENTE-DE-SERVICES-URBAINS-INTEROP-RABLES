@@ -1,0 +1,4 @@
+com\smartcity\soap\AirQualityService.class
+com\smartcity\soap\AirQualityServiceImpl.class
+com\smartcity\soap\model\AirData.class
+com\smartcity\soap\ServerPublisher.class

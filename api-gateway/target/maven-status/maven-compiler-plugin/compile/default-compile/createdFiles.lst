@@ -1,0 +1,4 @@
+com\smartcity\gateway\clients\GrpcAlertClient.class
+com\smartcity\gateway\controllers\GrpcAlertController.class
+com\smartcity\gateway\ApiGatewayApplication.class
+com\smartcity\gateway\CorsConfig.class

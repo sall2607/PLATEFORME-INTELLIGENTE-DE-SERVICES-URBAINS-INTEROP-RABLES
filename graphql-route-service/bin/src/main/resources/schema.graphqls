@@ -1,0 +1,10 @@
+type Route {
+    start: String
+    destination: String
+    duration: Int
+    transportMode: String
+}
+
+type Query {
+    routes(start: String!, destination: String!): [Route]
+}

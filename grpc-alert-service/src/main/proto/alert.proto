@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package com.smartcity.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.smartcity.grpc";
+option java_outer_classname = "AlertServiceProto";
+
+service AlertService {
+  rpc sendAlert (AlertRequest) returns (AlertResponse);
+}
+
+message AlertRequest {
+  // J'ai renommé 'alert_type' en 'type' pour avoir getType() en Java
+  string type = 1;      
+  string location = 2;      
+  string description = 3;   
+  int32 severity = 4;       
+}
+
+message AlertResponse {
+  string message = 1;       
+  bool success = 2;
+  string tracking_id = 3;   
+  
+  // J'ai ajouté ce champ car votre code Java fait .setSeverity(1)
+  int32 severity = 4;       
+}

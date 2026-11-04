@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # --- 1. BASE DE DONN�ES (PostgreSQL) ---
+  smartcity-db:
+    image: postgres:15-alpine
+    container_name: smartcity-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-sql:/docker-entrypoint-initdb.d # Ex�cute notre script SQL
+      - db_data:/var/lib/postgresql/data
+
+  # --- 2. SERVICE SOAP ---
+  soap-service:
+    build: ./soap-airquality-service
+    container_name: soap-service
+    ports:
+      - "8888:8888"
+
+  # --- 3. SERVICE REST (Mobilit�) ---
+  rest-service:
+    build: ./rest-mobility-service
+    container_name: rest-service
+    ports:
+      - "8081:8081"
+    environment:
+      # On pointe vers le conteneur "smartcity-db" au lieu de localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://smartcity-db:5432/mobility_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - smartcity-db
+
+  # --- 4. SERVICE GRAPHQL (Routes) ---
+  graphql-service:
+    build: ./graphql-route-service
+    container_name: graphql-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://smartcity-db:5432/route_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - smartcity-db
+
+  # --- 5. SERVICE gRPC (Alertes) ---
+  grpc-service:
+    build: ./grpc-alert-service
+    container_name: grpc-service
+    ports:
+      - "9090:9090"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://smartcity-db:5432/alert_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      - smartcity-db
+      
+      # LE NOUVEAU SERVICE
+  orchestrator-service:
+    build: ./orchestrator-service
+    container_name: orchestrator-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - soap-service
+      - rest-service
+      - graphql-service
+      - grpc-service
+
+  # --- 6. API GATEWAY (Le portier) ---
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      # IMPORTANT : On d�finit ici les adresses des autres conteneurs
+      # Ces variables doivent �tre utilis�es dans le application.yml
+      - AIR_URI=http://soap-service:8888
+      - REST_URI=http://rest-service:8081
+      - GRAPHQL_URI=http://graphql-service:8083
+      - GRPC_HOST=grpc-service
+      - GRPC_PORT=9090
+      # Ajoutez l'URI de l'orchestrateur
+      - ORCHESTRATOR_URI=http://orchestrator-service:8085
+    depends_on:
+      - soap-service
+      - rest-service
+      - graphql-service
+      - grpc-service
+
+volumes:
+  db_data:

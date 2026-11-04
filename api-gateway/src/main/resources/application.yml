@@ -1,0 +1,44 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Route SOAP
+        - id: airquality-service
+          # "Utilise la variable AIR_URI, sinon par défaut localhost:8888"
+          uri: ${AIR_URI:http://localhost:8888} 
+          predicates:
+            - Path=/air/**
+
+        # Route GraphQL
+        - id: graphql-service
+          uri: ${GRAPHQL_URI:http://localhost:8083}
+          predicates:
+            - Path=/graphql/**, /graphiql/**
+
+        # Route REST
+        - id: mobility-service
+          uri: ${REST_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/v1/mobility/**
+          filters:
+            - StripPrefix=2
+
+
+        
+        # Nouvelle route pour l'orchestrateur
+        - id: orchestrator-service
+          uri: ${ORCHESTRATOR_URI:http://localhost:8085}
+          predicates:
+            - Path=/api/orchestrator/**
+      # (Gardez votre config CORS existante ici...)
+
+# Config gRPC
+grpc:
+  alert:
+    host: ${GRPC_HOST:localhost}
+    port: ${GRPC_PORT:9090}

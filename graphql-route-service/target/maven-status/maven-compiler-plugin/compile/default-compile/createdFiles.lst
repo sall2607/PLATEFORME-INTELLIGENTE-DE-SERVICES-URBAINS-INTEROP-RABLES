@@ -1,0 +1,4 @@
+com\smartcity\graphql\service\RouteService.class
+com\smartcity\graphql\controller\RouteGraphQLController.class
+com\smartcity\graphql\model\Route.class
+com\smartcity\graphql\GraphqlRouteServiceApplication.class

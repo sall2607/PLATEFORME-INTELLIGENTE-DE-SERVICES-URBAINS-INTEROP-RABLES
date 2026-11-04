@@ -1,0 +1,9 @@
+type Route {
+    transportMode: String
+    duration: Int
+}
+
+type Query {
+    # On ajoute l'argument isPolluted
+    routes(start: String, destination: String, hasAlert: Boolean, isPolluted: Boolean): [Route]
+}

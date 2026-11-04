@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+encoding//graphql-route-service/src/main/java/com/smartcity/graphql/controller/RouteGraphQLController.java=UTF-8
+encoding//graphql-route-service/src/main/java/com/smartcity/graphql/model/Route.java=UTF-8
+encoding//grpc-alert-service/src/main/java/com/smartcity/grpc/controller/InternalCheckController.java=UTF-8
+encoding//orchestrator-service/src/main/java/com/smartcity/orchestrator/service/OrchestratorService.java=UTF-8
+encoding//rest-mobility-service/src/main/java/com/smartcity/mobility/DataLoader.java=UTF-8

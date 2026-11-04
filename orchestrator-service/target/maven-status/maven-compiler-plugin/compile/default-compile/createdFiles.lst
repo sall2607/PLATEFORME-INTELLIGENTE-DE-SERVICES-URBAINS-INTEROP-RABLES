@@ -1,0 +1,4 @@
+com\smartcity\orchestrator\controller\OrchestratorController.class
+com\smartcity\orchestrator\model\TripResponse.class
+com\smartcity\orchestrator\service\OrchestratorService.class
+com\smartcity\orchestrator\OrchestratorServiceApplication.class
